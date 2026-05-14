@@ -1,5 +1,4 @@
 import typing as tp
-import string
 
 
 def encrypt_caesar(plaintext: str, shift: int = 3) -> str:
@@ -16,11 +15,12 @@ def encrypt_caesar(plaintext: str, shift: int = 3) -> str:
     ''
     """
     ciphertext = ""
-    shift = shift % 26
-    lower = string.ascii_lowercase
-    upper = string.ascii_uppercase
-    table = str.maketrans(lower + upper, lower[shift:] + lower[:shift] + upper[shift:] + upper[:shift])
-    return plaintext.translate(table)
+    for char in plaintext:
+        if char.isalpha():
+            base = ord('A') if char.isupper() else ord('a')
+            ciphertext += chr((ord(char) - base + shift) % 26 + base)
+        else: ciphertext += char
+    return ciphertext
 
 
 def decrypt_caesar(ciphertext: str, shift: int = 3) -> str:
@@ -36,14 +36,10 @@ def decrypt_caesar(ciphertext: str, shift: int = 3) -> str:
     >>> decrypt_caesar("")
     ''
     """
-    plaintext = ""
-    return encrypt_caesar(ciphertext, -shift)
-
+    plaintext = encrypt_caesar(ciphertext, -shift)
+    return plaintext
 
 def caesar_breaker_brute_force(ciphertext: str, dictionary: tp.Set[str]) -> int:
-    """
-    Brute force breaking a Caesar cipher.
-    """
     best_shift = 0
     max_matches = 0
     for shift in range(26):
